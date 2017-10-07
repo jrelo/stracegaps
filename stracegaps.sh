@@ -3,17 +3,20 @@
 if [[ $# -ne 2 ]]
 then
   echo "Usage: $0 <strace.log> <threshold>"
-  echo "strace -t -T -o strace.log"
+  echo "strace -tt -T -o strace.log"
   exit 1
 fi
 
-format="%H:%M:%S"
+format="%H:%M:%S.%N"
 last=0
 current=0
 
 while read linefull
 do
-  line=${linefull:0:8}
+  stime=${linefull:0:8}
+  micro=${linefull:9:6}
+  nano=$(expr "$micro" '*' 1000)
+  line="${stime}.${micro}"
   current=$( date -d "$line" +"%s" )
   if [[ last -eq 0 ]]
   then
